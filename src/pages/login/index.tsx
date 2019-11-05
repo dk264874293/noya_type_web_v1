@@ -2,31 +2,37 @@ import React from 'react';
 import { Form,Input, Button,Row,Col,Icon } from 'antd';
 import { connect } from 'dva';
 import baseUrl from '@/utils/env';
+import { FormComponentProps } from 'antd/es/form';
 import router from 'umi/router';
+import { GlobalModelType } from '@/models/global';
+import { Loading,ConnectProps } from '@/models/connect'
 import Style from './index.less';
 
-@connect(({ global,loading }) => ({
-  global,loading
-}))
 
+interface ILoginProps extends ConnectProps {
+  global: GlobalModelType,
+  form:FormComponentProps['form'],
+  loading:Loading,
+}
+interface ILoginState {
+  uuid: string | number
+}
 
-class NormalLoginForm extends React.Component {
+class NormalLoginForm extends React.Component<ILoginProps,ILoginState> {
 
-  state = {
+  readonly state = {
     uuid: ''
   }
 
-  handleSubmit = (e:Event) => {
+  handleSubmit = (e:React.FormEvent<HTMLFormElement>):void => {
     e.preventDefault();
-    const {uuid} = this.state
+    const { uuid } = this.state
     const { form, dispatch } = this.props;
-    form.validateFields((err:Error, values) => {
+    form.validateFields((err:Error, values:any) => {
       if (!err) {
-        dispatch({
+        dispatch && dispatch({
           type: 'global/userLogin',
           payload : {...values,uuid},
-        }).then(() => {
-          router.push('/dataQuery')
         })
       }
     });
@@ -34,6 +40,10 @@ class NormalLoginForm extends React.Component {
 
   componentDidMount(){
     this.createUuid()
+    this.props.form.setFieldsValue({
+      username:'abc',
+      password: 'admin'
+    })
   }
 
   createUuid = () => {
@@ -44,8 +54,11 @@ class NormalLoginForm extends React.Component {
 
   render() {
     const { uuid } = this.state;
-    const { getFieldDecorator } = this.props.form;
-    const{ loading } = this.props;
+    const{ loading, form } = this.props;
+    if (!form) {
+      return null;
+    }
+    const { getFieldDecorator } = form
 
     return (
       <div id={Style.loginBar}>
@@ -53,18 +66,19 @@ class NormalLoginForm extends React.Component {
           <Row>
             <Col span={10}>
               <div className={Style.loginBg}>
-                <div className={Style.logo}></div>
+                <div className={Style.logo} />
               </div>
             </Col>
             <Col span={14}>
             <Form className={Style.formContent} onSubmit={this.handleSubmit}>
               <Form.Item >
-                {getFieldDecorator('username', {
-                  rules: [{ required: true, message: '请输入用户名' }],
-                })(
-                  <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="请输入用户名"/>,
-                )}
+                {
+                  getFieldDecorator('username',
+                    {rules: [{ required: true, message: '请输入用户名' }],}
+                  )(
+                    <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}placeholder="请输入用户名"/>,
+                  )
+                }
               </Form.Item>
               <Form.Item  >
                 {getFieldDecorator('password', {
@@ -103,5 +117,9 @@ class NormalLoginForm extends React.Component {
   }
 }
 
+const  NormalLoginFormDom = Form.create({ name: 'normal_login' })(NormalLoginForm)
 
-export default Form.create({ name: 'normal_login' })(NormalLoginForm)
+
+export default connect(({ global,loading }:ILoginProps):any => ({
+  global,loading
+}))(NormalLoginFormDom);
