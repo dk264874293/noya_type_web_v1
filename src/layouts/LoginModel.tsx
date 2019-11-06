@@ -15,8 +15,8 @@ export interface IBasicProps extends ConnectProps {
 
 interface ILoginProps extends ConnectState,IBasicProps{
   global: GlobalModelState
-  form:FormComponentProps['form']
-  style?:React.CSSProperties
+  form: FormComponentProps['form']
+  style?: React.CSSProperties
 }
 
 interface ILoginState{

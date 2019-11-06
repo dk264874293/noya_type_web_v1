@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import MotherBaby from './MotherBaby';
-import Medicine from './Medicine';
+// import Medicine from './Medicine';
 import { getDataadvisorKeywords } from '@/services/app';
 
 const { TabPane } = Tabs;
@@ -46,6 +46,7 @@ class DataQuery extends React.Component<{},IDataQueryState>{
         <>
           <Tabs type="card" onChange={this.tabChange}>
             <TabPane tab="母婴库" key="1">
+              <MotherBaby  keywordsList={keywordsList} tagVal={tagVal} />
               {
                 /*
                    <MotherBaby  keywordsList={keywordsList} tagVal={tagVal} />

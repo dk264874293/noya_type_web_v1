@@ -1,6 +1,28 @@
 
+import { Reducer } from 'redux';
+import { Subscription, Effect } from 'dva';
 
-export default {
+export interface IDataQuerystate {
+  MotherBabyUUID: string
+  MotherBabyStatus: boolean
+  MedicineUUID: string
+  MedicineStatus: boolean
+}
+
+interface IDataQueryType {
+  namespace: 'dataQuery';
+  state: IDataQuerystate;
+  reducers: {
+    setMotherBabyUUID: Reducer<IDataQuerystate>
+    setMotherBabyStatus: Reducer<IDataQuerystate>;
+    setMedicineUUID: Reducer<IDataQuerystate>;
+    setMedicineStatus: Reducer<IDataQuerystate>;
+    initData: Reducer<IDataQuerystate>;
+  };
+  subscriptions: { setup: Subscription };
+}
+
+const DataQueryModel: IDataQueryType ={
   namespace: 'dataQuery',
   state: {
     MotherBabyUUID:'',
@@ -9,12 +31,15 @@ export default {
     MedicineStatus:false
   },
 
-  effects: {
-  },
 
   reducers: {
-    setMotherBabyUUID(state,  { payload: MotherBabyUUID }) {
-      return { ...state, MotherBabyUUID };
+    setMotherBabyUUID(state = {
+      MotherBabyUUID:'',
+      MotherBabyStatus:false,
+      MedicineUUID:'',
+      MedicineStatus:false
+    },  { payload }):IDataQuerystate {
+      return { ...state};
     },
     setMotherBabyStatus(state,{ payload: MotherBabyStatus }){
       return { ...state, MotherBabyStatus };
@@ -27,13 +52,14 @@ export default {
     },
     initData(state){
       return {...state, ...{
-        MotherBabyUUID:'',
-        MotherBabyStatus:false,
-        MedicineUUID:'',
-        MedicineStatus:false
-      }
-
+          MotherBabyUUID:'',
+          MotherBabyStatus:false,
+          MedicineUUID:'',
+          MedicineStatus:false
+        }
       }
     }
   },
 };
+
+export default DataQueryModel;

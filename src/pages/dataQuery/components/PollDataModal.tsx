@@ -1,4 +1,5 @@
-import PropTypes from 'prop-types';
+
+import React from 'react';
 import { Modal,Tabs,Table,Button } from 'antd';
 import router from 'umi/router';
 import { DownloadXLSX } from '@/components'
@@ -6,7 +7,7 @@ import { DownloadXLSX } from '@/components'
 const { TabPane } = Tabs;
 
 
-const pollDataModal = function({moddalStatus,classify,classfyData,count,modalCancel,uuid,content,dataStatus}){
+const PollDataModal = function({moddalStatus,classify,classfyData,count,modalCancel,uuid,content,dataStatus}){
 
   const tabDataList = [];
   for(const k in classify){
@@ -96,15 +97,5 @@ const pollDataModal = function({moddalStatus,classify,classfyData,count,modalCan
   )
 }
 
-pollDataModal.defaultProps = {
-};
-pollDataModal.propTypes ={
-  moddalStatus:PropTypes.bool.isRequired,
-  classify:PropTypes.object,
-  modalCancel:PropTypes.func.isRequired,
-  classfyData:PropTypes.array,
-  uuid:PropTypes.string.isRequired,
-  dataStatus:PropTypes.string
-}
 
-export default pollDataModal
+export default PollDataModal

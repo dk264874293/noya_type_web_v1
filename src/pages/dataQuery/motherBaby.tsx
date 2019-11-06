@@ -17,15 +17,37 @@ import {
   getDataadvisorGetInfoData,getDataadvisorGetMotherBaby,
   getDataadvisorPollData
 } from '@/services/dataQuery';
-import PollDataModal from './components/pollDataModal';
+import PollDataModal from './components/PollDataModal';
+import { GlobalModelState } from '@/models/global';
+import { ConnectProps,ConnectState } from '@/models/connect'
+import { FormComponentProps } from 'antd/es/form';
 
 import { selectFilter } from '@/utils';
 
 const { Option } = Select;
 const dateFormat = 'YYYY-MM-DD';
 
-let timeStauts = null;
-class MotherBabyFrom extends React.PureComponent {
+let timeStauts:any = null;
+
+interface IMotherBabyProps  extends ConnectProps,ConnectState{
+  global: GlobalModelState
+  form: FormComponentProps['form']
+  tagVal:string
+}
+interface IMotherBabyState {
+  templateList: any[],
+  platformList: any[],
+  moreSelectList: any[],
+  loading: boolean,
+  templateStatus:boolean,
+  moddalStatus:boolean,
+  classify:any,
+  count:any,
+  content:any[]
+}
+
+
+class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabyState> {
 
   state={
     templateList: [],

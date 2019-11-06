@@ -10,21 +10,40 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-
 import {
   getDataAdvisorGetTemplate, getDatAadvisorGetPlatform,
   getDataadvisorGetInfoData,getDataadvisorRunMedicine,
   getDataadvisorPollData
 } from '@/services/dataQuery';
-import PollDataModal from './components/pollDataModal'
-
-import { selectFilter } from '@/utils';
+import { GlobalModelState } from '@/models/global';
+import { ConnectProps,ConnectState } from '@/models/connect'
+import { FormComponentProps } from 'antd/es/form';
+import PollDataModal from './components/PollDataModal'
+import { selectFilter } from '@/utils/index';
 
 const { Option } = Select;
-const dateFormat = 'YYYY-MM-DD';
+const dateFormat:string = 'YYYY-MM-DD';
 
-let timeStauts = null;
-class MedicineFrom extends React.PureComponent {
+let timeStauts:any = null;
+
+interface IMedicineProps extends ConnectProps,ConnectState{
+  global: GlobalModelState
+  form: FormComponentProps['form']
+}
+
+interface IMedicineState {
+  templateList: any[],
+  platformList: any[],
+  moreSelectList: any[],
+  loading: boolean,
+  templateStatus:boolean,
+  moddalStatus:boolean,
+  classify:any,
+  count:any,
+  content:any[]
+}
+
+class MedicineFrom extends React.PureComponent<IMedicineProps,IMedicineState> {
 
   state={
     templateList: [],
