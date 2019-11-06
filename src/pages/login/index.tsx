@@ -4,13 +4,13 @@ import { connect } from 'dva';
 import baseUrl from '@/utils/env';
 import { FormComponentProps } from 'antd/es/form';
 import router from 'umi/router';
-import { GlobalModelType } from '@/models/global';
+import { GlobalModelState } from '@/models/global';
 import { ConnectProps,ConnectState } from '@/models/connect'
 import Style from './index.less';
 
 
 interface ILoginProps extends ConnectProps,ConnectState {
-  global: GlobalModelType,
+  global: GlobalModelState,
   form:FormComponentProps['form'],
 
 }
