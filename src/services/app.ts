@@ -22,3 +22,9 @@ export async function getAppsCommonCommonOaram(): Promise<any> {
     method: 'get'
   })
 }
+
+export async function getDataadvisorKeywords(): Promise<any> {
+  return request('/api/dataadvisor/get-keywords',{
+    method:'get'
+  })
+}

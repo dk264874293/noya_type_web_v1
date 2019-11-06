@@ -2,9 +2,9 @@
 let baseUrl:string;
 
 if (process.env.NODE_ENV === "development") {
-  baseUrl = "http://172.16.1.112:8090";
+  baseUrl = "http://172.16.1.145:8090";
 } else {
-  baseUrl = "http://172.16.1.112:8090";
+  baseUrl = "http://172.16.1.145:8090";
 }
 
 export default baseUrl;

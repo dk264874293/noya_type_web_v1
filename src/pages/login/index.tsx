@@ -5,14 +5,14 @@ import baseUrl from '@/utils/env';
 import { FormComponentProps } from 'antd/es/form';
 import router from 'umi/router';
 import { GlobalModelType } from '@/models/global';
-import { Loading,ConnectProps } from '@/models/connect'
+import { ConnectProps,ConnectState } from '@/models/connect'
 import Style from './index.less';
 
 
-interface ILoginProps extends ConnectProps {
+interface ILoginProps extends ConnectProps,ConnectState {
   global: GlobalModelType,
   form:FormComponentProps['form'],
-  loading:Loading,
+
 }
 interface ILoginState {
   uuid: string | number
@@ -33,6 +33,8 @@ class NormalLoginForm extends React.Component<ILoginProps,ILoginState> {
         dispatch && dispatch({
           type: 'global/userLogin',
           payload : {...values,uuid},
+        }).then(() => {
+          router.push('/dataQuery')
         })
       }
     });
