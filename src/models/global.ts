@@ -24,7 +24,7 @@ export interface GlobalModelState {
   'medicineNeed':string[];
   "motherClassfyData": SelectModel[];
   "motherMoreSelect": SelectModel[];
-  'motherNeed': SelectModel[];
+  'motherNeed': string[];
 }
 
 export interface GlobalModelType {

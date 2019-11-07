@@ -1,7 +1,31 @@
 import request from '@/utils/request';
 
+export interface ITemplateConfig{
+  config:{
+    babyDays:string[]
+    classifyStatic:string[]
+    dataRange: string[]
+    keyWords: any[]
+    multipleChoice: {[propName: string]:string[]}[]
+    noisePost: any
+    noiseUser: any
+    platformId: string[]
+    showClassifyData: string
+    showData: string
+    template: string
+  }
+}
+
+export interface ITemplate extends ITemplateConfig{
+  data?:any
+  id: number
+  name: string
+  terrifyId: number
+  userId: number
+}
+
 // 获取模版信息
-export function getDataAdvisorGetTemplate(terrify_id,user_id){
+export function getDataAdvisorGetTemplate(terrify_id:number,user_id:number):Promise<ITemplate[]>{
   return request('/api/dataadvisor/get-template',{
     method: 'get',
     params:{
@@ -10,8 +34,15 @@ export function getDataAdvisorGetTemplate(terrify_id,user_id){
   })
 }
 
+export interface IPlatformRes{
+  id?:number
+  name:string
+  platformId:string
+  terrifyId?:string
+}
+
 // 获取平台信息
-export function getDatAadvisorGetPlatform(terrify_id){
+export function getDatAadvisorGetPlatform(terrify_id:number): Promise<IPlatformRes[]>{
   return request('/api/dataadvisor/get-platform',{
     method: 'get',
     params: {
@@ -21,7 +52,7 @@ export function getDatAadvisorGetPlatform(terrify_id){
 }
 
 // 获取数据列表
-export function getDataadvisorGetInfoData(paramters){
+export function getDataadvisorGetInfoData(paramters:string){
   return request('/api/dataadvisor/get-info-data',{
     method: 'get',
     params:{
@@ -30,8 +61,22 @@ export function getDataadvisorGetInfoData(paramters){
   })
 }
 
+export interface IMotherBady{
+  platformId:string[]
+  babyDays:string[]
+  keyWords:string[]
+  classifyStatic:string[]
+  template:string
+  multipleChoice:any[]
+  dataRange:string[]
+  noisePost: number | null
+  noiseUser: number | null
+  showData: number | null
+  showClassifyData: number | null
+}
+
 //查询母婴数据
-export function getDataadvisorGetMotherBaby(dataform){
+export function getDataadvisorGetMotherBaby(dataform: IMotherBady){
   return request('/api/dataadvisor/get-mother-baby',{
     method: 'post',
     data:{
@@ -41,7 +86,7 @@ export function getDataadvisorGetMotherBaby(dataform){
 }
 
 // 轮询查询状态
-export function getDataadvisorPollData(uuid){
+export function getDataadvisorPollData(uuid:string){
   return request('/api/dataadvisor/poll-data',{
     method: 'get',
     params:{

@@ -15,12 +15,16 @@ import moment from 'moment';
 import {
   getDataAdvisorGetTemplate, getDatAadvisorGetPlatform,
   getDataadvisorGetInfoData,getDataadvisorGetMotherBaby,
-  getDataadvisorPollData
+  getDataadvisorPollData,
+  IPlatformRes,ITemplateConfig,ITemplate,IMotherBady
 } from '@/services/dataQuery';
 import PollDataModal from './components/PollDataModal';
 import { GlobalModelState } from '@/models/global';
+import { IDataQuerystate } from '@/models/dataQuery';
 import { ConnectProps,ConnectState } from '@/models/connect'
 import { FormComponentProps } from 'antd/es/form';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { IDataQueryState } from './index'
 
 import { selectFilter } from '@/utils';
 
@@ -29,15 +33,22 @@ const dateFormat = 'YYYY-MM-DD';
 
 let timeStauts:any = null;
 
-interface IMotherBabyProps  extends ConnectProps,ConnectState{
+interface IMotherBabyProps  extends ConnectProps,ConnectState,IDataQueryState{
   global: GlobalModelState
+  dataQuery:IDataQuerystate
   form: FormComponentProps['form']
-  tagVal:string
 }
+
+interface IMoreSelect{
+  select: any
+  key:string
+  name:string
+}
+
 interface IMotherBabyState {
-  templateList: any[],
-  platformList: any[],
-  moreSelectList: any[],
+  templateList: ITemplate[],
+  platformList: IPlatformRes[],
+  moreSelectList: IMoreSelect[],
   loading: boolean,
   templateStatus:boolean,
   moddalStatus:boolean,
@@ -49,21 +60,27 @@ interface IMotherBabyState {
 
 class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabyState> {
 
-  state={
-    templateList: [],
-    platformList: [],
-    moreSelectList: [],
-    loading:false,
-    templateStatus:false,
-    moddalStatus:false,
-    classify:null,
-    count:null,
-    content:[],
+
+
+  constructor(props:IMotherBabyProps){
+    super(props);
+    this.state={
+      templateList: [],
+      platformList: [],
+      moreSelectList: [],
+      loading:false,
+      templateStatus:false,
+      moddalStatus:false,
+      classify:null,
+      count:null,
+      content:[],
+    }
   }
 
-  componentDidMount(){
+  componentDidMount():void{
     this.getTemplate()
-    getDatAadvisorGetPlatform(1).then(data => {
+    // 获取平台数据
+    getDatAadvisorGetPlatform(1).then((data:IPlatformRes[]):void => {
       data.unshift({
         name:'全选',
         platformId:'all'
@@ -73,10 +90,10 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
       })
     })
     this.addSetTime()
-
   }
 
-  componentWillReceiveProps(nextProps){
+  // 对比数据是否切换到当前页 是的话发起请求 否的话清楚定时器
+  componentWillReceiveProps(nextProps:IMotherBabyProps){
     const nextTagVal = nextProps.tagVal;
     const thatTagVal = this.props.tagVal;
     const thatUserId = this.props.global.user.userId;
@@ -94,6 +111,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     }
   }
 
+  // 判断是否存在uuid并且状态是否完成
   addSetTime(){
     const { MotherBabyUUID,MotherBabyStatus } = this.props.dataQuery;
     if(MotherBabyUUID && MotherBabyUUID !== '' && !MotherBabyStatus){
@@ -101,14 +119,16 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     }
   }
 
-  setTimePollData = (uuid) => {
+  // 设置定时器轮询是否完成报告
+  setTimePollData = (uuid:string):void => {
     this.setState({
       loading:true
     });
     timeStauts = setInterval(() => {
       getDataadvisorPollData(uuid).then(res => {
         if(res){
-          const {classify,count,content} = res;
+          const { classify,count,content } = res;
+          const { dispatch } = this.props;
           this.getTemplate();
           clearInterval(timeStauts);
           this.setState({
@@ -116,7 +136,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
             moddalStatus:true,
             classify,count,content
           });
-          this.props.dispatch({
+          dispatch && dispatch({
             type: 'dataQuery/setMotherBabyStatus',
             payload : true,
           })
@@ -134,9 +154,10 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     clearInterval(timeStauts)
   }
 
-  getTemplate(userId = this.props.global.user.userId){
+  // 获取模版
+  getTemplate(userId:number = this.props.global.user.userId){
     if(userId){
-      getDataAdvisorGetTemplate(1,userId).then(data => {
+      getDataAdvisorGetTemplate(1,userId).then((data:ITemplate[]):void => {
         this.setState({
           templateList: data
         })
@@ -145,7 +166,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   }
 
   // form 提交
-  handleSubmit = e => {
+  handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
@@ -160,7 +181,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
             });
           }
         }
-        const selectData = {
+        const selectData:IMotherBady = {
           platformId,
           babyDays,
           keyWords,
@@ -176,11 +197,12 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
           loading:true
         });
         getDataadvisorGetMotherBaby(selectData).then(res => {
-          this.props.dispatch({
+          const { dispatch } = this.props;
+          dispatch && dispatch({
             type: 'dataQuery/setMotherBabyUUID',
             payload : res.uuid,
           })
-          this.props.dispatch({
+          dispatch && dispatch({
             type: 'dataQuery/setMotherBabyStatus',
             payload : false,
           })
@@ -196,22 +218,33 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   };
 
   // 模版切换
-  templateChange = (val,option) => {
-    const {config} = option.props;
-    const {platformId,keyWords,dataRange,babyDays,
+  templateChange = (val:number,option:any) => {
+    const { config }:ITemplateConfig = option.props;
+    const { platformId,keyWords,dataRange,babyDays,
       classifyStatic,multipleChoice,noiseUser,
       noisePost,showClassifyData,showData } = config;
     const { motherMoreSelect, motherNeed } = this.props.global;
-    let moreSelectList = [];
-    let multipleData = {};
-    let promiseList = [];
-    let promiseVal = [];
+    let moreSelectList:{
+      select:any
+      key:string
+      name:string
+    }[] = [];
+    let multipleData:{
+      [propName: string]: string[]
+    } = {};
+    let promiseList: Promise<any>[] = [];
+    let promiseVal:{
+      key:string
+      name:string
+    }[] = [];
     multipleChoice.map(item => {
       for(const k in item){
         multipleData[k] = item[k]
         const thatData = motherMoreSelect.filter(_ => _.key === k)[0];
         const { key,value } = thatData;
+        // 判断是否需要请求远程数据
         if(motherNeed.indexOf(k) >= 0){
+          // 异步请求添加至列队
           promiseList.push(getDataadvisorGetInfoData(k))
           promiseVal.push({
             key,
@@ -240,8 +273,9 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
         moreSelectList,
         loading:false
       },() => {
-        const noise = [noiseUser === '1' ? 'noiseUser': null,noisePost === '1'?'noisePost': null].filter(_ => !!_);
-        const showDataVal = [showClassifyData === '1' ? 'showClassifyData': null,showData === '1'? 'showData':null ].filter(_ => !!_);
+        const noise:(string | null)[] = [noiseUser === '1' ? 'noiseUser': null,noisePost === '1'?'noisePost': null].filter(_ => !!_);
+        const showDataVal:(string | null)[] = [showClassifyData === '1' ? 'showClassifyData': null,showData === '1'? 'showData':null ].filter(_ => !!_);
+        // 根据模版设置属性
         this.props.form.setFieldsValue({
           platformId,keyWords,babyDays,
           noise,
@@ -251,6 +285,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
           endValue:moment(dataRange[1],dateFormat),
           ...multipleData
         },() => {
+          // 判断是否选中分类
           if(showDataVal.indexOf('showClassifyData') >= 0){
             this.props.form.setFieldsValue({
               classifyStatic
@@ -260,8 +295,9 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
       })
     })
   }
+
   // 筛选条件变更
-  moreSelectChange = (val,option) => {
+  moreSelectChange = (val:string[],option:any[]) => {
     const Len = option.length;
     const { motherNeed } = this.props.global;
     let moreSelectList = this.state.moreSelectList.slice(0);
@@ -275,6 +311,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     if(Len > 0){
       const thatVal = option[Len - 1];
       const {children,value} = thatVal.props;
+      // 判断是否需要远程请求数据
       if(motherNeed.indexOf(value) >= 0){
         this.setState({
           loading:true
@@ -307,7 +344,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   }
 
   // 是否保存模版
-  templateStatusChange = ({target}) => {
+  templateStatusChange = ({target}:CheckboxChangeEvent) => {
     this.setState({
       templateStatus: target.checked
     })
@@ -318,8 +355,8 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
       moddalStatus:false
     })
   }
-
-  disabledStateDate = startValue => {
+  // 限制开始时间
+  disabledStateDate = (startValue:any) => {
     const endValue = this.props.form.getFieldValue('endValue');
     if (!startValue || !endValue) {
       return startValue > moment().endOf('day').subtract(1, 'd');
@@ -329,8 +366,8 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     const year = 1000 * 60  * 60 * 24 * 365 * 2;
     return startVal > endVal || startVal < (endVal - year) ||  startValue > moment().endOf('day').subtract(1, 'd');
   }
-
-  disabledEndDate = endValue => {
+  //  限制结束时间
+  disabledEndDate = (endValue:any) => {
     const startValue = this.props.form.getFieldValue('startValue');
     if (!startValue || !endValue) {
       return endValue > moment().endOf('day').subtract(1, 'd');
@@ -592,6 +629,8 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
 
 const MotherBaby = Form.create({ name: 'MotherBabyFrom' })(MotherBabyFrom);
 
-export default connect(({ global,dataQuery }) => ({
+export default connect(({ global,dataQuery }):{
+  global: GlobalModelState
+  dataQuery:IDataQuerystate} => ({
   global,dataQuery
 }))(MotherBaby);

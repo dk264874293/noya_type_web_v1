@@ -13,7 +13,7 @@ interface IKeyWords {
   tagName: string
 }
 
-interface IDataQueryState {
+export interface IDataQueryState {
   keywordsList:IKeyWords[],
   tagVal:string
 }
