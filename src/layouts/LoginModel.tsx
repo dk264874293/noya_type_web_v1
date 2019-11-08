@@ -144,7 +144,7 @@ class LoginModel extends React.Component<ILoginProps,ILoginState>{
           onCancel={this.handleCancel}
         >
           <Spin spinning={loading.global}>
-            <Form  className="login-form">
+            <Form  className="login-form" submit={this.handleSubmit}>
               <Form.Item style={{marginBottom:'16px'}}>
                 {getFieldDecorator('old_password', {
                   rules: [{ required: true, message: '请输入现密码!' }],
@@ -172,7 +172,7 @@ class LoginModel extends React.Component<ILoginProps,ILoginState>{
                 )}
               </Form.Item>
 
-              <Button type="primary" loading={iconLoading} block onClick={this.handleSubmit}>
+              <Button type="primary"  htmlType="submit" loading={iconLoading} block >
                 确认
               </Button>
             </Form>

@@ -1,5 +1,5 @@
 import {
-  authLogin,getAppsCommonCommonOaram //,authlogout,setUserChangePassword
+  authLogin,getAppsCommonCommonOaram ,authlogout,setUserChangePassword
 } from '@/services/app';
 import { Reducer } from 'redux';
 import { Subscription, Effect } from 'dva';
@@ -73,31 +73,31 @@ const GlobalModel: GlobalModelType = {
       });
     },
     *userLogout(_, { call, put }){
-      // yield call(authlogout);
-      // yield put({
-      //   type: 'setUserInfo',
-      //   payload:{
-      //     user:{
-      //       isAdmin: null,
-      //       userName: "",
-      //       userId: 0
-      //     },
-      //     "medicineClassfyData": [],
-      //     "medicineMoreSelect":[],
-      //     'medicineNeed':[],
-      //     "motherClassfyData": [],
-      //     "motherMoreSelect": [],
-      //     'motherNeed':[]
-      //   },
-      // });
+      yield call(authlogout);
+      yield put({
+        type: 'setUserInfo',
+        payload:{
+          user:{
+            isAdmin: null,
+            userName: "",
+            userId: 0
+          },
+          "medicineClassfyData": [],
+          "medicineMoreSelect":[],
+          'medicineNeed':[],
+          "motherClassfyData": [],
+          "motherMoreSelect": [],
+          'motherNeed':[]
+        },
+      });
 
-      // removeToken();
+      removeToken();
     },
     *userChangePassword({ payload:  values  }, { call }){
-      // yield call(setUserChangePassword,values);
+      yield call(setUserChangePassword,values);
     },
     *getGlobalState(_,{select}){
-      // return yield select(state => state.global.user.userName);
+      return yield select((state:any) => state.global.user.userName);
     }
 
   },
@@ -109,28 +109,27 @@ const GlobalModel: GlobalModelType = {
   },
 
   subscriptions: {
-    // setup({ dispatch, history }) {
-    //   history.listen(({pathname}) => {
-    //     dispatch({
-    //       type: 'getGlobalState'
-    //     }).then(res => {
-    //       const token = getToken()
-    //       // console.log(pathname,token,123)
-    //       if(pathname !== '/login' && res === ''){
-    //         if(token && token !== ''){
-    //           dispatch({
-    //             type: 'getUserInfo'
-    //           })
-    //         }else{
-    //           router.push('/login')
-    //         }
-    //       }else if(pathname === '/login' && res !== '' && (token && token !== '')){
-    //         router.push('/dataQuery')
-    //       }
-
-    //     })
-    //   });
-    // },
+    setup({ dispatch, history }) {
+      history.listen(({pathname}) => {
+        dispatch({
+          type: 'getGlobalState'
+        }).then((res:string) => {
+          const token = getToken()
+          // console.log(pathname,token,123)
+          if(pathname !== '/login' && res === ''){
+            if(token && token !== ''){
+              dispatch({
+                type: 'getUserInfo'
+              })
+            }else{
+              router.push('/login')
+            }
+          }else if(pathname === '/login' && res !== '' && (token && token !== '')){
+            router.push('/dataQuery')
+          }
+        })
+      });
+    },
 
   },
 };

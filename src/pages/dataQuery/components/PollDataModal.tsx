@@ -6,10 +6,35 @@ import { DownloadXLSX } from '@/components'
 
 const { TabPane } = Tabs;
 
+interface IclassfyData{
+  value: string;
+  key:string;
+}
 
-const PollDataModal = function({moddalStatus,classify,classfyData,count,modalCancel,uuid,content,dataStatus}){
+interface IPollDataProps{
+  moddalStatus: boolean
+  classify:{
+    [propsName:string]:any[]
+  }
+  classfyData:IclassfyData[]
+  count:number | null
+  uuid: string
+  content: string[]
+  modalCancel: () => any
+  dataStatus?:string
+}
 
-  const tabDataList = [];
+interface ITabData {
+  name: string
+  value?:string
+  data:any[]
+}
+
+
+const PollDataModal = function({
+  moddalStatus,classify,classfyData,count,modalCancel,uuid,content,dataStatus
+}:IPollDataProps){
+  const tabDataList:ITabData[] = [];
   for(const k in classify){
     tabDataList.push({
       name: classfyData.filter(_ => _.key === k)[0]['value'],
@@ -23,19 +48,19 @@ const PollDataModal = function({moddalStatus,classify,classfyData,count,modalCan
       title: dataStatus === 'Medicine' ? '医生数（user_id）' : '用户数（user_id）',
       dataIndex: 'users',
       key: 'users',
-      sorter: (a, b) => a.users - b.users
+      sorter: (a:any, b:any) => a.users - b.users
     },
     {
       title: dataStatus === 'Medicine' ? '问诊数（post_id）' : '贴子数（post_id）',
       dataIndex: 'posts',
       key: 'posts',
-      sorter: (a, b) => a.posts - b.posts
+      sorter: (a:any, b:any) => a.posts - b.posts
     },
     {
       title: '言论数（id）',
       dataIndex: 'records',
       key: 'records',
-      sorter: (a, b) => a.records - b.records
+      sorter: (a:any, b:any) => a.records - b.records
     }
   ]
 

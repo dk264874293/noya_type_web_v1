@@ -297,7 +297,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   }
 
   // 筛选条件变更
-  moreSelectChange = (val:string[],option:any[]) => {
+  moreSelectChange = (val:string[],option:any) => {
     const Len = option.length;
     const { motherNeed } = this.props.global;
     let moreSelectList = this.state.moreSelectList.slice(0);
@@ -629,8 +629,8 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
 
 const MotherBaby = Form.create({ name: 'MotherBabyFrom' })(MotherBabyFrom);
 
-export default connect(({ global,dataQuery }):{
+export default connect(({ global,dataQuery }:{
   global: GlobalModelState
-  dataQuery:IDataQuerystate} => ({
+  dataQuery:IDataQuerystate}) => ({
   global,dataQuery
 }))(MotherBaby);
