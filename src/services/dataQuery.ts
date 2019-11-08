@@ -33,16 +33,8 @@ export function getDataAdvisorGetTemplate(terrify_id:number,user_id:number):Prom
     }
   })
 }
-
-export interface IPlatformRes{
-  id?:number
-  name:string
-  platformId:string
-  terrifyId?:string
-}
-
 // 获取平台信息
-export function getDatAadvisorGetPlatform(terrify_id:number): Promise<IPlatformRes[]>{
+export function getDatAadvisorGetPlatform(terrify_id:number): Promise<any[]>{
   return request('/api/dataadvisor/get-platform',{
     method: 'get',
     params: {
@@ -63,16 +55,16 @@ export function getDataadvisorGetInfoData(paramters:string){
 
 export interface IMotherBady{
   platformId:string[]
-  babyDays:string[]
   keyWords:string[]
   classifyStatic:string[]
   template:string
   multipleChoice:any[]
   dataRange:string[]
-  noisePost: number | null
-  noiseUser: number | null
   showData: number | null
   showClassifyData: number | null
+  babyDays?:string[]
+  noisePost?: number | null
+  noiseUser?: number | null
 }
 
 //查询母婴数据
@@ -96,7 +88,7 @@ export function getDataadvisorPollData(uuid:string){
 }
 
 // 医疗数据查询
-export function getDataadvisorRunMedicine(dataform){
+export function getDataadvisorRunMedicine(dataform: IMotherBady){
   return request('/api/dataadvisor/get-medicine/',{
     method:'post',
     data:{
