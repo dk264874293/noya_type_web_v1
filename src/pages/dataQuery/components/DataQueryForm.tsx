@@ -20,7 +20,6 @@ import {
 } from '@/services/dataQuery';
 
 import PollDataModal from './PollDataModal';
-import { GlobalModelState } from '@/models/global';
 import { IDataQuerystate } from '@/models/dataQuery';
 import { ConnectProps,ConnectState } from '@/models/connect'
 import { FormComponentProps } from 'antd/es/form';
@@ -51,13 +50,18 @@ export interface IDataQueryData extends IDataQueryState {
   noiseStatus:boolean
   babyDaysStatus:boolean
   submitFun: {
-    (source: any): any;
+    (source: any): any
   }
+  moreSelect:any[],
+  motherNeed:string[]
+  userId:number
+  classfyData: any[]
+  setStatusDispatch:string
+  setUUIDDispatch:string
 }
 
 // props接口
 interface IMotherBabyProps  extends ConnectProps,ConnectState,IDataQueryData{
-  global: GlobalModelState
   dataQuery:IDataQuerystate
   form: FormComponentProps['form']
 }
@@ -119,8 +123,8 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   componentWillReceiveProps(nextProps:IMotherBabyProps){
     const nextTagVal = nextProps.tagVal;
     const thatTagVal = this.props.tagVal;
-    const thatUserId = this.props.global.user.userId;
-    const nextUserId = nextProps.global.user.userId;
+    const thatUserId = this.props.userId;
+    const nextUserId = nextProps.userId;
     if(nextTagVal !== thatTagVal){
       if(nextTagVal === '1'){
         this.addSetTime()
@@ -151,7 +155,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
       getDataadvisorPollData(uuid).then(res => {
         if(res){
           const { classify,count,content } = res;
-          const { dispatch } = this.props;
+          const { dispatch, setStatusDispatch } = this.props;
           this.getTemplate();
           clearInterval(timeStauts);
           this.setState({
@@ -160,7 +164,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
             classify,count,content
           });
           dispatch && dispatch({
-            type: 'dataQuery/setMotherBabyStatus',
+            type: 'dataQuery/' + setStatusDispatch,
             payload : true,
           })
         }
@@ -179,7 +183,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   }
 
   // 获取模版
-  getTemplate(userId:number = this.props.global.user.userId){
+  getTemplate(userId:number = this.props.userId){
     const { terrify_id } = this.props;
     if(userId){
       getDataAdvisorGetTemplate(terrify_id,userId).then(data => {
@@ -229,13 +233,13 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
           loading:true
         });
         this.props.submitFun(selectData).then((res:any) => {
-          const { dispatch } = this.props;
+          const { dispatch,setStatusDispatch,setUUIDDispatch } = this.props;
           dispatch && dispatch({
-            type: 'dataQuery/setMotherBabyUUID',
+            type: 'dataQuery/' + setUUIDDispatch,
             payload : res.uuid,
           })
           dispatch && dispatch({
-            type: 'dataQuery/setMotherBabyStatus',
+            type: 'dataQuery/' + setStatusDispatch,
             payload : false,
           })
 
@@ -252,12 +256,11 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   // 模版切换
   templateChange = (val:number,option:any) => {
     const { config }:ITemplateConfig = option.props;
-    const { babyDaysStatus,noiseStatus } = this.props;
+    const { babyDaysStatus,noiseStatus,moreSelect,motherNeed } = this.props;
+
     const { platformId,keyWords,dataRange,
       classifyStatic,multipleChoice,noiseUser,
       noisePost,showClassifyData,showData } = config;
-
-    const { motherMoreSelect, motherNeed } = this.props.global;
     let moreSelectList:{
       select:any
       key:string
@@ -274,7 +277,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     multipleChoice.map(item => {
       for(const k in item){
         multipleData[k] = item[k]
-        const thatData = motherMoreSelect.filter(_ => _.key === k)[0];
+        const thatData = moreSelect.filter(_ => _.key === k)[0];
         const { key,value } = thatData;
         // 判断是否需要请求远程数据
         if(motherNeed.indexOf(k) >= 0){
@@ -343,7 +346,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   // 筛选条件变更
   moreSelectChange = (val:string[],option:any) => {
     const Len = option.length;
-    const { motherNeed } = this.props.global;
+    const { motherNeed } = this.props;
     let moreSelectList = this.state.moreSelectList.slice(0);
     if(Len < moreSelectList.length){
       moreSelectList = moreSelectList.filter(item =>  val.indexOf(item.key) >= 0)
@@ -423,13 +426,11 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
   }
 
   render() {
-    const { keywordsList, form, global, dataQuery, noiseStatus, babyDaysStatus } = this.props;
+    const { keywordsList, form,DataUUID, noiseStatus, babyDaysStatus,moreSelect,classfyData } = this.props;
     const { getFieldDecorator,getFieldValue } = form;
     const { loading,templateList, platformList,
       moreSelectList,templateStatus,moddalStatus,
       classify,count,content} = this.state;
-    const { motherMoreSelect,motherClassfyData } = global;
-    const { MotherBabyUUID } = dataQuery;
     const moreSelectVal = moreSelectList.map(_=>_.key);
 
     const showData = getFieldValue('showData');
@@ -464,7 +465,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
         </Form.Item>
     )});
 
-    const moreSelectDom = motherMoreSelect.map( _ => (
+    const moreSelectDom = moreSelect.map( _ => (
       <Option value={_.key} key={_.key}>{_.value}</Option>
     ));
 
@@ -481,7 +482,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     ));
 
 
-    const medicineClassfyDom = motherClassfyData.map(_=>(
+    const medicineClassfyDom = classfyData.map(_=>(
       <Option value={_.key} key={_.key}>{_.value}</Option>
     ));
 
@@ -571,10 +572,10 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
           classify={classify}
           count={count}
           content={content}
-          classfyData={motherClassfyData}
+          classfyData={classfyData}
           modalCancel={this.modalCancel}
 
-          uuid={MotherBabyUUID}
+          uuid={DataUUID}
         />
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Form.Item label="模版复用" hasFeedback>
@@ -681,8 +682,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
 
 const DataQueryForm:any = Form.create({ name: 'MotherBabyFrom' })(MotherBabyFrom);
 
-export default connect(({ global,dataQuery }:{
-  global: GlobalModelState
+export default connect(({ dataQuery }:{
   dataQuery:IDataQuerystate}) => ({
-  global,dataQuery
+  dataQuery
 }))(DataQueryForm);

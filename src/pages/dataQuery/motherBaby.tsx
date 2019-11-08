@@ -1,16 +1,17 @@
 import React from 'react';
 import { connect } from 'dva';
 import DataQueryForm,{ IDataQueryData,IDataQueryState } from './components/DataQueryForm'
+import { GlobalModelState } from '@/models/global';
 import { IDataQuerystate } from '@/models/dataQuery';
 import { getDataadvisorGetMotherBaby } from '@/services/dataQuery'
 
 
 interface IMothbaby extends IDataQueryState{
   dataQuery: IDataQuerystate
+  global:GlobalModelState
 }
 
-function MotherBaby({ keywordsList,tagVal,dataQuery }:IMothbaby): JSX.Element {
-
+function MotherBaby({ keywordsList,tagVal,dataQuery,global }:IMothbaby): JSX.Element {
   const MotherBaby:IDataQueryData = {
     terrify_id: 1,
     keywordsList,
@@ -19,7 +20,13 @@ function MotherBaby({ keywordsList,tagVal,dataQuery }:IMothbaby): JSX.Element {
     DataStatus: dataQuery.MotherBabyStatus,
     noiseStatus:true,
     babyDaysStatus:true,
-    submitFun: getDataadvisorGetMotherBaby
+    submitFun: getDataadvisorGetMotherBaby,
+    moreSelect: global.motherMoreSelect,
+    motherNeed: global.motherNeed,
+    userId: global.user.userId,
+    classfyData: global.motherClassfyData,
+    setStatusDispatch: 'setMotherBabyUUID',
+    setUUIDDispatch: 'setMotherBabyUUID'
   }
 
   return (
@@ -27,6 +34,6 @@ function MotherBaby({ keywordsList,tagVal,dataQuery }:IMothbaby): JSX.Element {
   )
 }
 
-export default connect(({ dataQuery }:any) => ({
-  dataQuery
+export default connect(({ dataQuery,global }:any) => ({
+  dataQuery,global
 }))(MotherBaby)

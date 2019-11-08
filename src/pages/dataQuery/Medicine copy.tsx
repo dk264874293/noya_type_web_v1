@@ -195,7 +195,6 @@ class MedicineFrom extends React.PureComponent<IMedicineProps,IMedicineState> {
     const {config} = option.props;
     const {platformId,keyWords,dataRange,
       classifyStatic,multipleChoice,showClassifyData,showData } = config;
-    console.log(config)
     const { medicineMoreSelect, medicineNeed } = this.props.global;
     let moreSelectList = [];
     let multipleData = {};
