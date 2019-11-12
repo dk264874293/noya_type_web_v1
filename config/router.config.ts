@@ -20,4 +20,15 @@ export default [
       }
     ]
   },
+  {
+    path: '/wordCloud',
+    name: 'wordCloud',
+    component: '../layouts/index',
+    routes:[
+      {
+        path: '/wordCloud',
+        component: './wordCloud/index'
+      }
+    ]
+  },
 ];

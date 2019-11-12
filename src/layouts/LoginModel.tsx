@@ -144,7 +144,7 @@ class LoginModel extends React.Component<ILoginProps,ILoginState>{
           onCancel={this.handleCancel}
         >
           <Spin spinning={loading.global}>
-            <Form  className="login-form" submit={this.handleSubmit}>
+            <Form  className="login-form" onSubmit={this.handleSubmit}>
               <Form.Item style={{marginBottom:'16px'}}>
                 {getFieldDecorator('old_password', {
                   rules: [{ required: true, message: '请输入现密码!' }],

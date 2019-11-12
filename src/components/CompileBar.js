@@ -39,7 +39,7 @@ class CompileBar extends React.Component{
               unscramble:ev.target.value,date,user
             } ,dataName)}}
             value={unscramble}
-            autoSize={{ minRows: 3, maxRows: 6 }}
+            autosize={{ minRows: 3, maxRows: 6 }}
           />
           {userDate}
         </div>

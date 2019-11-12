@@ -44,7 +44,7 @@ export interface IDataQueryState{
 }
 // 参数接口
 export interface IDataQueryData extends IDataQueryState {
-  terrify_id:number
+  terrify_id:number //
   DataUUID:string
   DataStatus:boolean
   noiseStatus:boolean
@@ -540,7 +540,7 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
     const babydaysItem = babyDaysStatus ? (
       <Form.Item label="孕期/宝宝年龄（月）：">
         {getFieldDecorator('babyDays',{
-          initialValue:['-22','36'],
+          initialValue:[-22,36],
         })(
           <Slider
             min={-22}
@@ -574,7 +574,6 @@ class MotherBabyFrom extends React.PureComponent<IMotherBabyProps,IMotherBabySta
           content={content}
           classfyData={classfyData}
           modalCancel={this.modalCancel}
-
           uuid={DataUUID}
         />
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
